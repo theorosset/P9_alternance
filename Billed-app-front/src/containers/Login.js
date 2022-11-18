@@ -63,7 +63,7 @@ export default class Login {
       })
       .catch(() => this.createUser(user))
   }
-
+   /* istanbul ignore next */
   // not need to cover this function by tests
   login = (user) => {
     if (this.store) {
@@ -81,7 +81,7 @@ export default class Login {
       return null
     }
   }
-
+ /* istanbul ignore next */
   // not need to cover this function by tests
   createUser = (user) => {
     if (this.store) {
