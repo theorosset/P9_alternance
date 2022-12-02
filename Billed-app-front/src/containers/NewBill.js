@@ -20,11 +20,18 @@ export default class NewBill {
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
+    const fileType = file.type.split("/")[1].toLowerCase()
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
     formData.append('email', email)
 
+    if(fileType !== 'png' && fileType !== 'jpg' && fileType !== 'jpeg') {
+      this.document.querySelector(`input[data-testid="file"]`).value = ""
+
+     return alert("Veuillez utiliser un format d'image valide (png, jpg, jpeg)")
+    }
+    
     this.store
       .bills()
       .create({
@@ -33,10 +40,9 @@ export default class NewBill {
           noContentType: true
         }
       })
-      .then(({fileUrl, key}) => {
-        console.log(fileUrl)
+      .then(({filePath, key}) => {
         this.billId = key
-        this.fileUrl = fileUrl
+        this.fileUrl = filePath
         this.fileName = fileName
       }).catch(error => console.error(error))
   }
@@ -62,6 +68,7 @@ export default class NewBill {
   }
 
   // not need to cover this function by tests
+  /* istanbul ignore next */
   updateBill = (bill) => {
     if (this.store) {
       this.store
