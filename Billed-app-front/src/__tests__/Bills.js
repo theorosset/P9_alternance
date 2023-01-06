@@ -51,7 +51,7 @@ describe("Given I am connected as an employee", () => {
     document.body.innerHTML = BillsUI({ error: 'Fail' })
     expect(screen.getAllByTestId('error-message')).toBeTruthy()
   })
-
+  // click on eye test
   describe('When I click on icon eye', () => {
     it('Should open bill modal', () => {
       document.body.innerHTML = BillsUI({ data: bills })
@@ -65,8 +65,8 @@ describe("Given I am connected as an employee", () => {
       userEvent.click(document.querySelector(`div[data-testid="icon-eye"]`))
       const billUrl = document.querySelector(`div[data-testid="icon-eye"]`).getAttribute('data-bill-url')
       const modale = document.getElementById('modaleFile')
+      expect(modale.querySelector('img').getAttribute('src') === billUrl).toBe(true)
       expect(modale).toBeTruthy()
-      expect(modale.innerHTML.includes(billUrl)).toBeTruthy()
     })
   })
 })
