@@ -25,7 +25,6 @@ export default class NewBill {
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
     formData.append('email', email)
-
     if(fileType !== 'png' && fileType !== 'jpg' && fileType !== 'jpeg') {
       this.document.querySelector(`input[data-testid="file"]`).value = ""
 
@@ -40,9 +39,9 @@ export default class NewBill {
           noContentType: true
         }
       })
-      .then(({filePath, key}) => {
+      .then(({fileUrl, key}) => {
         this.billId = key
-        this.fileUrl = filePath
+        this.fileUrl = fileUrl
         this.fileName = fileName
       }).catch(error => console.error(error))
   }
