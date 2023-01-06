@@ -30,15 +30,9 @@ export default class {
 
   handleClickIconEye = (icon) => {
     const billUrl = icon.getAttribute("data-bill-url")
-    const dontHaveImg = billUrl.split('/').find(item => item === 'null')
-    if(dontHaveImg) {
-      $('#modaleFile').find(".modal-body").html(`<div style='text-align: center;' class="bill-proof-container"><p>il n'y a aucune image pour cette demande</p></div>`)
-      $('#modaleFile').modal('show')
-    } else {
-      const imgWidth = Math.floor($('#modaleFile').width() * 0.5)
-      $('#modaleFile').find(".modal-body").html(`<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`)
-      $('#modaleFile').modal('show')
-    }
+    const imgWidth = Math.floor($('#modaleFile').width() * 0.5)
+    $('#modaleFile').find(".modal-body").html(`<div style='text-align: center;' class="bill-proof-container"><img width=${imgWidth} src=${billUrl} alt="Bill" /></div>`)
+    $('#modaleFile').modal('show')
   }
 
   getBills = () => {

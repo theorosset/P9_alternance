@@ -69,4 +69,22 @@ describe("Given I am connected as an employee", () => {
       expect(modale).toBeTruthy()
     })
   })
+  //click on btn new bill
+  describe('when i click on new bill button', () => {
+    it('Should navigate to new bills page', () => {
+      $.fn.modal = jest.fn();
+
+      document.body.innerHTML = BillsUI({ data: bills })
+
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+      const classContainer = new Bills({ document, onNavigate, Store, localStorage: window.localStorage })
+
+      const navigateToForm = jest.fn(classContainer.handleClickNewBill)
+      screen.getByTestId('btn-new-bill').addEventListener('click', navigateToForm)
+      userEvent.click(screen.getByTestId('btn-new-bill'))
+      expect(screen.getByTestId('form-new-bill')).toBeTruthy()
+    })
+  })
 })
