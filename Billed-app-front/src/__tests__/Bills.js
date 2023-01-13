@@ -2,12 +2,11 @@
  * @jest-environment jsdom
  */
 
-import { screen, waitFor, cleanup } from '@testing-library/dom'
+import { screen, waitFor } from '@testing-library/dom'
 import BillsUI from '../views/BillsUI.js'
 import { bills } from '../fixtures/bills.js'
 import { ROUTES, ROUTES_PATH } from '../constants/routes.js'
 import { localStorageMock } from '../__mocks__/localStorage.js'
-import StoreApp from '../app/Store.js'
 import store from '../__mocks__/store.js'
 import userEvent from '@testing-library/user-event'
 import Bills from '../containers/Bills.js'
@@ -137,7 +136,7 @@ describe('Given i am connected as an employee', () => {
             },
           }
         })
-        //document.body.innerHTML = BillsUI({ error: 'Erreur 404' })
+        document.body.innerHTML = BillsUI({ error: 'Erreur 404' })
         expect(screen.getByText(/Erreur 404/)).toBeTruthy()
       })
       it('should get 500 error', async () => {
