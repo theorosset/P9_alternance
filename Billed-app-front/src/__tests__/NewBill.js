@@ -69,8 +69,8 @@ describe("Given I am connected as an employee", () => {
         const fileInput = screen.getByTestId('file')
         fileInput.addEventListener('change', handleChangeFile);
         const blob = new Blob(["text"], { type: "image/txt" });
-         const file = new File([blob], "file.txt", { type: "image/txt" });
-         fireEvent.change(fileInput, { target: { files: [file] } });
+        const file = new File([blob], "file.txt", { type: "image/txt" });
+        fireEvent.change(fileInput, { target: { files: [file] } });
         expect(handleChangeFile).toHaveBeenCalledTimes(1)
         expect(screen.getByTestId('file-error')).toBeVisible()
       })
