@@ -102,6 +102,7 @@ describe('Given I am connected as an employee', () => {
       jest.spyOn(store, 'bills');
       const update = await store.bills().update()
       const create = await store.bills().create()
+     
 
       const bill = {
         "id": "47qAXb6fIm2zOKkLzMro",

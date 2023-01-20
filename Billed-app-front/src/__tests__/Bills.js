@@ -7,10 +7,12 @@ import BillsUI from '../views/BillsUI.js'
 import { bills } from '../fixtures/bills.js'
 import { ROUTES, ROUTES_PATH } from '../constants/routes.js'
 import { localStorageMock } from '../__mocks__/localStorage.js'
-import store from '../__mocks__/store.js'
+import mockStore from '../__mocks__/store.js'
 import userEvent from '@testing-library/user-event'
 import Bills from '../containers/Bills.js'
 import router from '../app/Router.js'
+
+jest.mock("../app/store", () => mockStore)
 
 describe('Given I am connected as an employee', () => {
   describe('When I am on Bills Page', () => {
@@ -36,14 +38,19 @@ describe('Given I am connected as an employee', () => {
     })
 
     // page loading test
-    it('Should have loading text on page', () => {
-      document.body.innerHTML = BillsUI({ data: [], loading: true })
-      expect(screen.getAllByText('Loading...')).toBeTruthy()
+    describe('When bills page loading', () => {
+      it('Then have loading text on page', () => {
+        document.body.innerHTML = BillsUI({ data: [], loading: true })
+        expect(screen.getAllByText('Loading...')).toBeTruthy()
+      })
     })
+    
     // error message test
-    it("Should have error message if can't get tickets", () => {
-      document.body.innerHTML = BillsUI({ error: 'Fail' })
-      expect(screen.getAllByTestId('error-message')).toBeTruthy()
+    describe('When bills page have error', () => {
+      it("Then have error message if can't get tickets", () => {
+        document.body.innerHTML = BillsUI({ error: 'Fail' })
+        expect(screen.getAllByTestId('error-message')).toBeTruthy()
+      })
     })
 
     it('Then bills should be ordered from earliest to latest', () => {
@@ -100,23 +107,17 @@ describe('Given I am connected as an employee', () => {
 })
 // integration test get
 describe('Given i am connected as an employee', () => {
-  beforeEach(() => {
-    Object.defineProperty(window, 'localStorage', { value: localStorageMock })
-    window.localStorage.setItem('user', JSON.stringify({ type: 'Employee' }))
-    const root = document.createElement('div')
-    root.setAttribute('id', 'root')
-    document.body.appendChild(root)
-    router()
-  })
-  describe('When i am on Bills page', () => {
-    localStorage.setItem('user', JSON.stringify({ type: 'Employee' }))
-
+  describe('When i naviguate on Bills page', () => {
     describe('When i get list of bills', () => {
       it('Should get Bills ticket', async () => {
+        localStorage.setItem("user", JSON.stringify({ type:"Employee" }))
+        document.body.innerHTML = `<div id="root"></div>`
+        router()
+        window.onNavigate(ROUTES_PATH.Bills)  
         //spy store bills function 
-        const spy = jest.spyOn(store, 'bills')
+        const spy = jest.spyOn(mockStore, 'bills')
         //get list bills 
-        const bills = await store.bills().list()
+        const bills = await mockStore.bills().list()
 
         document.body.innerHTML = BillsUI({ data: bills })
         
@@ -128,26 +129,42 @@ describe('Given i am connected as an employee', () => {
       })
     })
     describe('When i want to get list of bills but i have an error', () => {
+      beforeEach(() => {
+        jest.spyOn(mockStore, "bills")
+        Object.defineProperty(
+            window,
+            'localStorage',
+            { value: localStorageMock }
+        )
+        window.localStorage.setItem('user', JSON.stringify({
+          type: 'Employee',
+          email: "a@a"
+        }))
+        document.body.innerHTML = '<div id="root"></div>'
+        router()
+      })
       it('should get 404 error', async () => {
-        store.bills.mockImplementationOnce(() => {
+        mockStore.bills.mockImplementationOnce(() => {
           return {
             list: () => {
-              return Promise.reject(new Error(404))
+              return Promise.reject(new Error('Erreur 404'))
             },
           }
         })
-        document.body.innerHTML = BillsUI({ error: 'Erreur 404' })
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick)
         expect(screen.getByText(/Erreur 404/)).toBeTruthy()
       })
       it('should get 500 error', async () => {
-        store.bills.mockImplementationOnce(() => {
+        mockStore.bills.mockImplementationOnce(() => {
           return {
             list: () => {
-              return Promise.reject(new Error(500))
+              return Promise.reject(new Error('Erreur 500'))
             },
           }
         })
-        document.body.innerHTML = BillsUI({ error: 'Erreur 500' })
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick)
         expect(screen.getByText(/Erreur 500/)).toBeTruthy()
       })
     })
