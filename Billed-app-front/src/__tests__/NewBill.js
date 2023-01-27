@@ -63,13 +63,19 @@ describe("Given I am connected as an employee", () => {
 
 		describe("When I add file with wrong extension", () => {
 			test("Then a error message appear", () => {
+				// init new bill for use function of this instance 
 				const newBill = new NewBill({document, onNavigate, store: Store, localStorage: window.localStorage});
 				const handleChangeFile = jest.fn(() => newBill.handleChangeFile);
+
 				// add event handleChange
 				const fileInput = screen.getByTestId("file");
 				fileInput.addEventListener("change", handleChangeFile);
+
+				// create blob and file for test 
 				const blob = new Blob(["text"], { type: "image/txt" });
 				const file = new File([blob], "file.txt", { type: "image/txt" });
+
+				//simulating event change on fileInput
 				fireEvent.change(fileInput, { target: { files: [file] } });
 				expect(handleChangeFile).toHaveBeenCalledTimes(1);
 				expect(screen.getByTestId("file-error")).toBeVisible();
@@ -77,11 +83,16 @@ describe("Given I am connected as an employee", () => {
 		});
 		describe("When I add a file with good extension", () => {
 			test("Then input file have a value and error-message dont appaer", () => {
-				const spy = jest.spyOn(store, "bills");
+				// init new bill for use function of this instance 
 				const newBill = new NewBill({document, onNavigate, store: Store, localStorage: window.localStorage});
+				// use simulating function jest 
 				const handleChangeFile = jest.fn(() => newBill.handleChangeFile);
 				const fileInput = screen.getByTestId("file");
+
+				// add event listener on fileInput
 				fileInput.addEventListener("change", handleChangeFile);
+				
+				// create blob and file for test 
 				const blob = new Blob(["jpg"], { type: "image/jpg" });
 				const file = new File([blob], "file.jpg", { type: "image/jpg" });
 				fireEvent.change(fileInput, { target: { files: [file] } });
