@@ -99,7 +99,6 @@ describe("Given I am connected as an employee", () => {
 
 				expect(handleChangeFile).toHaveBeenCalledTimes(1);
 				expect(screen.getByTestId("file-error").classList.contains("displayNone")).toBe(true);
-				expect(screen.getByTestId("file-error").value).not.toBe("");
 				expect(fileInput.files[0]).toStrictEqual(file);
 			});
 		});
@@ -109,11 +108,21 @@ describe("Given I am connected as an employee", () => {
 //test integration post 
 describe("Given I am connected as an employee", () => {
 	describe("When I am on NewBill Page", () => {
+		/**
+		 * define localStorage / init document / init router for use function onNavigate
+		 * before all test
+		 * */
+		beforeEach(() => {
+			Object.defineProperty(window, "localStorage", { value: localStorageMock });
+			window.localStorage.setItem("user", JSON.stringify({ type: "Employee" }));
+			document.body.innerHTML = "<div id=\"root\"></div>";
+			router();
+		})
+
 		test("Then I submit form and it generate", async () => {
 			jest.spyOn(store, "bills");
 			const update = await store.bills().update();
 			const create = await store.bills().create();
-     
 
 			const bill = {
 				"id": "47qAXb6fIm2zOKkLzMro",
@@ -135,20 +144,40 @@ describe("Given I am connected as an employee", () => {
 			expect(create.fileUrl).toEqual("https://localhost:3456/images/test.jpg");    
 		});
 		describe("When get a error on api", () => {
-			test("should get an 500 error", async () => {
+			test("Then get an 500 error", async () => {
 				jest.spyOn(store, "bills");
 				console.error = jest.fn();
   
-				Object.defineProperty(window, "localStorage", { value: localStorageMock });
-				window.localStorage.setItem("user", JSON.stringify({ type: "Employee" }));
-				document.body.innerHTML = "<div id=\"root\"></div>";
-				router();
 				window.onNavigate(ROUTES_PATH.NewBill);
   
 				store.bills.mockImplementationOnce(() => {
 					return {
 						update : () => {
 							return Promise.reject(new Error("Erreur 500"));
+						},
+					};
+				});
+				const newBill = new NewBill({document,  onNavigate, store: store, localStorage: window.localStorage});
+  
+				const form = screen.getByTestId("form-new-bill");
+				const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+				form.addEventListener("submit", handleSubmit);
+				fireEvent.submit(form);
+				await new Promise(process.nextTick);
+  
+				expect(console.error).toBeCalled();
+			});
+			test("Then get an 404 error", async () => {
+
+				jest.spyOn(store, "bills");
+				console.error = jest.fn();
+
+				window.onNavigate(ROUTES_PATH.NewBill);
+  
+				store.bills.mockImplementationOnce(() => {
+					return {
+						update : () => {
+							return Promise.reject(new Error("Erreur 404"));
 						},
 					};
 				});
