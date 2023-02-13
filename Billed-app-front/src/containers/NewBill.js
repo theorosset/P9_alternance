@@ -27,7 +27,7 @@ export default class NewBill {
     formData.append('email', email)
     if(fileType !== 'png' && fileType !== 'jpg' && fileType !== 'jpeg') {
       this.document.querySelector(`input[data-testid="file"]`).value = ""
-      this.document.querySelector('.error-message').classList.remove('displayNone')
+      return this.document.querySelector('.error-message').classList.remove('displayNone')
     } else {
       this.document.querySelector('.error-message').classList.add('displayNone')
     }
